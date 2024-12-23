@@ -11,8 +11,8 @@ Content-Type: application/json
 
 O body da requisição deve ser
 {
-  "email": "joao.silva@email.com",
-  "password": "senha123"
+  "email": "nome.sobrenome@operadoraDeEmail.com",
+  "password": "Letras+Números"
 }
 
 a resposta para o suceso da autenticação deve ser:
