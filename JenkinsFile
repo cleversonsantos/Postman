@@ -2,16 +2,13 @@ pipeline {
     agent any
  
     environment {
-        // Caminho para o arquivo da coleção Postman no repositório
         POSTMAN_COLLECTION = 'ServeRest API.postman_collection.json'
-        // Caminho para o arquivo de ambiente do Postman (se houver)
         POSTMAN_ENVIRONMENT = 'Serverest.postman_environment.json'
     }
  
     stages {
         stage('Clonar Repositório') {
             steps {
-                // Clona o repositório do GitHub
                 checkout scm
             }
         }
@@ -20,7 +17,7 @@ pipeline {
             steps {
                 script {
                     // Instala o Newman
-                    sh 'npm install -g newman'
+                    bat 'npm install -g newman'  // Usando 'bat' ao invés de 'sh' para Windows
                 }
             }
         }
@@ -30,11 +27,9 @@ pipeline {
                 script {
                     // Executa o Newman com a coleção do Postman
                     if (fileExists(POSTMAN_ENVIRONMENT)) {
-                        // Se o arquivo de ambiente existir, execute com ele
-                        sh "newman run ${POSTMAN_COLLECTION} -e ${POSTMAN_ENVIRONMENT}"
+                        bat "newman run ${POSTMAN_COLLECTION} -e ${POSTMAN_ENVIRONMENT}"  // Usando 'bat'
                     } else {
-                        // Caso contrário, execute sem o ambiente
-                        sh "newman run ${POSTMAN_COLLECTION}"
+                        bat "newman run ${POSTMAN_COLLECTION}"  // Usando 'bat'
                     }
                 }
             }
@@ -43,7 +38,6 @@ pipeline {
  
     post {
         always {
-            // Limpeza do ambiente após execução
             cleanWs()
         }
     }
