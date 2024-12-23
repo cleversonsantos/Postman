@@ -2,7 +2,7 @@ pipeline {
     agent any
  
     environment {
-        POSTMAN_COLLECTION = 'ServeRest API.postman_collection.json'
+        POSTMAN_COLLECTION = 'ServeRest_API.postman_collection.json'
         POSTMAN_ENVIRONMENT = 'Serverest.postman_environment.json'
     }
  
