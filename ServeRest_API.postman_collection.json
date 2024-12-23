@@ -1,0 +1,611 @@
+{
+	"info": {
+		"_postman_id": "fbd5a4db-b141-4431-97a2-297d9922f792",
+		"name": "ServeRest API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17527862",
+		"_collection_link": "https://planetary-astronaut-601135.postman.co/workspace/IcatuSeguros_API~e73a770a-ba54-4ebc-a5c9-ed161fe0a184/collection/17527862-fbd5a4db-b141-4431-97a2-297d9922f792?action=share&source=collection_link&creator=17527862"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"if (response.authorization) {\r",
+							"    pm.environment.set('token', response.authorization);\r",
+							"    console.log('Token JWT salvo com sucesso!');\r",
+							"} else {\r",
+							"    console.error('Token JWT não encontrado na resposta.');\r",
+							"}\r",
+							"\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Content-Type is application/json\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json; charset=utf-8\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"usuario1@exemplo.com\",\r\n    \"password\": \"senha0001\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://serverest.dev/login",
+					"protocol": "https",
+					"host": [
+						"serverest",
+						"dev"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "busca_usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"\r",
+							"const novosUsuarios=response.usuarios.filter(function(usuarios){return/^Cleverson\\d*$/.test(usuarios.nome)});\r",
+							"\r",
+							"const usuariosFiltrados=novosUsuarios.map(function(usuarios) {\r",
+							"    return usuarios.nome;\r",
+							"}).join(\", \");\r",
+							"pm.environment.set('usuarios', usuariosFiltrados)\r",
+							"\r",
+							"//Testes\r",
+							"\r",
+							"// Teste 1: Verificar resposta (status 200)\r",
+							"pm.test(\"Status code é 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Teste 2: Validar JSON\r",
+							"pm.test(\"Resposta é JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Teste 3: validar que a resposta contém a propriedade 'usuarios'\r",
+							"pm.test(\"Resposta contém propriedade 'usuarios'\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property('usuarios');\r",
+							"});\r",
+							"\r",
+							"// Teste 4: validar se há pelo menos um usuário na lista\r",
+							"pm.test(\"Lista de usuários não está vazia\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.usuarios.length).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"// Teste 5: Validar dados do primeiro usuário\r",
+							"pm.test(\"Primeiro usuário contém propriedades esperadas\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    let user = jsonData.usuarios[0];\r",
+							"    pm.expect(user).to.have.property('_id');\r",
+							"    pm.expect(user).to.have.property('nome');\r",
+							"    pm.expect(user).to.have.property('email');\r",
+							"    pm.expect(user).to.have.property('password');\r",
+							"    pm.expect(user).to.have.property('administrador');\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RlMTk4M0BleGVtcGxvLmNvbSIsInBhc3N3b3JkIjoic2VuaGExMjMiLCJpYXQiOjE3MzQ3MTYxNjcsImV4cCI6MTczNDcxNjc2N30.e3mrAYKzlhYfUfYeL51Sna_lK6QsUvfpadBbN4K_nwU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://serverest.dev/usuarios",
+					"protocol": "https",
+					"host": [
+						"serverest",
+						"dev"
+					],
+					"path": [
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cadastra-usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"if (response._id) {\r",
+							"    pm.environment.set('user_id', response._id);\r",
+							"    console.log('ID do usuário salvo com sucesso!');\r",
+							"} else {\r",
+							"    console.error('Erro ao salvar ID do usuário!');\r",
+							"}\r",
+							"\r",
+							"//Testes\r",
+							"\r",
+							"// Teste 1: Verificar se a resposta(status 201)\r",
+							"pm.test(\"Status code é 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"// Teste 2: Validar JSON\r",
+							"pm.test(\"Resposta é JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Teste 3: Garantir que a resposta contém a mensagem de sucesso\r",
+							"pm.test(\"Mensagem de sucesso na resposta\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+							"});\r",
+							"\r",
+							"// Teste 4: Validar se o ID do usuário foi gerado\r",
+							"pm.test(\"Resposta contém ID do usuário\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property('_id');\r",
+							"});\r",
+							"\r",
+							"// Teste 5: Confirmar que o tempo de resposta é inferior a 1 segundo\r",
+							"pm.test(\"Tempo de resposta é aceitável\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});\r",
+							"\r",
+							"//valida e-mail existente\r",
+							"pm.test(\"Valida email duplicado\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Este email já está sendo usado\");\r",
+							"});\r",
+							"\r",
+							"//campo obrigatório ausente\r",
+							"pm.test(\"Valida campo obrigatório faltando\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.include(\"email é obrigatório\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nome\": \"Cleverson\",\r\n    \"email\": \"usuario1@exemplo.com\",\r\n    \"password\": \"senha0001\",\r\n    \"administrador\": \"true\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://serverest.dev/usuarios",
+					"protocol": "https",
+					"host": [
+						"serverest",
+						"dev"
+					],
+					"path": [
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "detalhes_usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Teste 1: Verificar se o status code é 200\r",
+							"pm.test(\"Status code é 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Teste 2: Validar se a resposta é JSON\r",
+							"pm.test(\"Resposta é JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Teste 3: Garantir que o usuário retornado possui as propriedades esperadas\r",
+							"pm.test(\"Usuário contém propriedades esperadas\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property('_id');\r",
+							"    pm.expect(jsonData).to.have.property('nome');\r",
+							"    pm.expect(jsonData).to.have.property('email');\r",
+							"    pm.expect(jsonData).to.have.property('password');\r",
+							"    pm.expect(jsonData).to.have.property('administrador');\r",
+							"});\r",
+							"\r",
+							"// Teste 4: Validar valores específicos do usuário\r",
+							"pm.test(\"Valores do usuário estão corretos\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.nome).to.eql(\"João Silva\");\r",
+							"    pm.expect(jsonData.email).to.eql(\"joao.silva@email.com\");\r",
+							"    pm.expect(jsonData.administrador).to.eql(\"true\");\r",
+							"});\r",
+							"\r",
+							"// Teste 5: Validar tempo de resposta\r",
+							"pm.test(\"Tempo de resposta é aceitável\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});\r",
+							"\r",
+							"//usuário inexistente\r",
+							"pm.test(\"Valida usuário inexistente\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Usuário não encontrado\");\r",
+							"});\r",
+							"\r",
+							"    "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://serverest.dev/usuarios/{{user_id}}",
+					"protocol": "https",
+					"host": [
+						"serverest",
+						"dev"
+					],
+					"path": [
+						"usuarios",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "alterar_usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Teste 1: Verificar se o status code é 200\r",
+							"pm.test(\"Status code é 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Teste 2: Validar se a resposta é JSON\r",
+							"pm.test(\"Resposta é JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Teste 3: Garantir que a mensagem de alteração foi retornada\r",
+							"pm.test(\"Mensagem de sucesso na resposta\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Registro alterado com sucesso\");\r",
+							"});\r",
+							"\r",
+							"// Teste 4: Validar tempo de resposta\r",
+							"pm.test(\"Tempo de resposta é aceitável\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});\r",
+							"\r",
+							"//altera usuário inexistente\r",
+							"pm.test(\"Valida usuário inexistente\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Usuário não encontrado\");\r",
+							"});\r",
+							"\r",
+							"//altera e-mail existente\r",
+							"pm.test(\"Valida email duplicado\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Este email já está sendo usado\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RlMTk4M0BleGVtcGxvLmNvbSIsInBhc3N3b3JkIjoic2VuaGExMjMiLCJpYXQiOjE3MzQ3MTYxNjcsImV4cCI6MTczNDcxNjc2N30.e3mrAYKzlhYfUfYeL51Sna_lK6QsUvfpadBbN4K_nwU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "bearer",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"Cleverson\",\r\n  \"email\": \"teste2005@exemplo.com\",\r\n  \"password\": \"senha101\",\r\n  \"administrador\": \"false\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://serverest.dev/usuarios/{{user_id}}",
+					"protocol": "https",
+					"host": [
+						"serverest",
+						"dev"
+					],
+					"path": [
+						"usuarios",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete_usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Teste 1: Verificar se o status code é 200\r",
+							"pm.test(\"Status code é 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Teste 2: Validar se a resposta é JSON\r",
+							"pm.test(\"Resposta é JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Teste 3: Garantir que a mensagem de sucesso foi retornada\r",
+							"pm.test(\"Mensagem de sucesso na resposta\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Registro excluído com sucesso\");\r",
+							"});\r",
+							"\r",
+							"// Teste 4: Validar tempo de resposta\r",
+							"pm.test(\"Tempo de resposta é aceitável\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});\r",
+							"\r",
+							"//delete de usuárioinexistente\r",
+							"pm.test(\"Valida exclusão de usuário inexistente\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Nenhum registro excluído\");\r",
+							"});\r",
+							"\r",
+							"//delete de mesmo usuário 2x\r",
+							"pm.test(\"Valida exclusão duplicada\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Nenhum registro excluído\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RlMTk4M0BleGVtcGxvLmNvbSIsInBhc3N3b3JkIjoic2VuaGExMjMiLCJpYXQiOjE3MzQ3MTYxNjcsImV4cCI6MTczNDcxNjc2N30.e3mrAYKzlhYfUfYeL51Sna_lK6QsUvfpadBbN4K_nwU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://serverest.dev/usuarios/{{user_id}}",
+					"protocol": "https",
+					"host": [
+						"serverest",
+						"dev"
+					],
+					"path": [
+						"usuarios",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"const rateLimit = 100; // Limite de requisições por minuto\r",
+					"const now = new Date().getTime();\r",
+					"\r",
+					"if (!pm.variables.get(\"lastRequestTime\")) {\r",
+					"    pm.variables.set(\"lastRequestTime\", now);\r",
+					"    pm.variables.set(\"requestCount\", 1);\r",
+					"} else {\r",
+					"    const lastRequestTime = parseInt(pm.variables.get(\"lastRequestTime\"));\r",
+					"    const requestCount = parseInt(pm.variables.get(\"requestCount\"));\r",
+					"\r",
+					"    if (now - lastRequestTime < 60000) { // Menos de 1 minuto\r",
+					"        if (requestCount >= rateLimit) {\r",
+					"            throw new Error(\"Limite de requisições excedido. Aguarde 1 minuto.\");\r",
+					"        }\r",
+					"        pm.variables.set(\"requestCount\", requestCount + 1);\r",
+					"    } else {\r",
+					"        pm.variables.set(\"lastRequestTime\", now);\r",
+					"        pm.variables.set(\"requestCount\", 1);\r",
+					"    }\r",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "rateLimit",
+			"value": ""
+		},
+		{
+			"key": "requestCount",
+			"value": ""
+		}
+	]
+}
