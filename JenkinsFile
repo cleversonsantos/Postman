@@ -1,18 +1,15 @@
 pipeline {
     agent any
- 
     environment {
         POSTMAN_COLLECTION = 'ServeRest_API.postman_collection.json'
         POSTMAN_ENVIRONMENT = 'Serverest.postman_environment.json'
     }
- 
     stages {
         stage('Clonar Repositório') {
             steps {
                 checkout scm
             }
         }
- 
         stage('Instalar Dependências') {
             steps {
                 script {
@@ -21,24 +18,26 @@ pipeline {
                 }
             }
         }
- 
         stage('Executar Testes Postman') {
             steps {
                 script {
-                    // Executa o Newman com a coleção do Postman
+                    // Verifica se o arquivo de ambiente existe antes de rodar os testes
                     if (fileExists(POSTMAN_ENVIRONMENT)) {
-                        bat "newman run ${POSTMAN_COLLECTION} -e ${POSTMAN_ENVIRONMENT}"  // Usando 'bat'
+                        echo "Arquivo de ambiente encontrado: ${POSTMAN_ENVIRONMENT}"
+                        // Executa o Newman com o arquivo de ambiente, caso ele exista
+                        bat "newman run ${POSTMAN_COLLECTION} -e ${POSTMAN_ENVIRONMENT}"
                     } else {
-                        bat "newman run ${POSTMAN_COLLECTION}"  // Usando 'bat'
+                        echo "Arquivo de ambiente não encontrado. Executando sem ambiente."
+                        // Executa o Newman sem o arquivo de ambiente, caso não exista
+                        bat "newman run ${POSTMAN_COLLECTION}"
                     }
                 }
             }
         }
     }
- 
     post {
         always {
-            cleanWs()
+            cleanWs()  // Limpa o workspace após a execução
         }
     }
 }
